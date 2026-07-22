@@ -1566,13 +1566,13 @@ def doctor(*, engine_home: str | Path | None = None) -> dict[str, Any]:
     )
     ready_render = ready_analysis and windows and dependency_state["originpro"]
     missing_dependencies = [name for name in dependencies if not dependency_state[name]]
-    repair_python_ok = sys.version_info[:2] == (3, 10)
+    repair_python_ok = sys.version_info[:2] >= (3, 12)
     checks.append(
         {
             "name": "automatic_repair_python",
             "ok": repair_python_ok,
             "value": platform.python_version(),
-            "required": "CPython 3.10.x verified lock",
+            "required": "CPython >=3.12 configured lock",
         }
     )
     repairable = bool(repair_python_ok and windows and engine_ok and missing_dependencies)
@@ -1584,7 +1584,7 @@ def doctor(*, engine_home: str | Path | None = None) -> dict[str, Any]:
     if not engine_ok:
         manual_blockers.append("provide_editaplot_engine_home")
     if missing_dependencies and python_ok and not repair_python_ok:
-        manual_blockers.append("automatic_repair_requires_verified_cpython_3_10")
+        manual_blockers.append("automatic_repair_requires_cpython_3_12_or_newer")
     if not dependency_state.get("originpro", False):
         manual_blockers.append(
             "python_originpro_package_can_be_repaired_but_licensed_origin_must_be_installed_manually"
